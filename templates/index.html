@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }} - Projeto DevOps</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1 class="pulse">PROJETO <span class="highlight">DEVOPS</span></h1>
+            <nav>
+                <ul>
+                    <li><a href="/"><i class="fas fa-home"></i> Início</a></li>
+                    <li><a href="/sobre"><i class="fas fa-info-circle"></i> Sobre</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <main>
+            <div class="circuit-bg">
+                <object type="image/svg+xml" data="{{ url_for('static', filename='images/circuit.svg') }}" class="circuit-svg" aria-label="Circuit background"></object>
+            </div>
+            
+            <div class="hero-section">
+                <h2 class="glow-text">{{ title }}</h2>
+                <div class="tech-grid">
+                    <div class="tech-item">
+                        <i class="fab fa-python fa-3x highlight"></i>
+                        <p>Python</p>
+                    </div>
+                    <div class="tech-item">
+                        <i class="fab fa-docker fa-3x highlight"></i>
+                        <p>Docker</p>
+                    </div>
+                    <div class="tech-item">
+                        <i class="fab fa-github fa-3x highlight"></i>
+                        <p>GitHub Actions</p>
+                    </div>
+                </div>
+                <p>Bem-vindo ao nosso projeto de <span class="highlight">DevOps</span>, onde combinamos as melhores práticas de desenvolvimento e operações para criar uma aplicação robusta e escalável.</p>
+                <p>Este projeto demonstra a implementação de um pipeline de CI/CD completo, containerização com Docker e testes automatizados.</p>
+                <div class="cta-buttons">
+                    <a href="/sobre" class="btn primary-btn">Saiba Mais</a>
+                    <a href="https://github.com" class="btn secondary-btn">GitHub <i class="fab fa-github"></i></a>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>&copy; 2025 Projeto DevOps. Todos os direitos reservados.</p>
+        </footer>
+    </div>
+
+    <div class="grid-overlay"></div>
+    <div class="corner-accent top-left"></div>
+    <div class="corner-accent top-right"></div>
+    <div class="corner-accent bottom-left"></div>
+    <div class="corner-accent bottom-right"></div>
+
+    <script>
+        // Efeito de digitação para o título principal
+        document.addEventListener('DOMContentLoaded', function() {
+            const glowElements = document.querySelectorAll('.glow-text');
+            
+            // Adiciona classe para animar elementos ao carregar a página
+            setTimeout(() => {
+                document.body.classList.add('loaded');
+            }, 300);
+            
+            // Efeito de hover nos itens de tecnologia
+            const techItems = document.querySelectorAll('.tech-item');
+            techItems.forEach(item => {
+                item.addEventListener('mouseenter', function() {
+                    this.classList.add('tech-hover');
+                });
+                item.addEventListener('mouseleave', function() {
+                    this.classList.remove('tech-hover');
+                });
+            });
+        });
+    </script>
+</body>
+</html>
