@@ -59,3 +59,42 @@ pip install -r requirements.txt
 ```bash
 python app.py
 ```
+
+## Testes
+
+Este projeto inclui testes unitários automatizados usando pytest.
+
+### Executar os testes
+
+```bash
+# Executar todos os testes
+pytest test_app.py -v
+
+# Executar testes com cobertura
+pytest test_app.py -v --cov=app --cov-report=term-missing
+
+# Executar testes e gerar relatório HTML de cobertura
+pytest test_app.py --cov=app --cov-report=html
+```
+
+### Testes incluídos
+
+- ✅ Teste das rotas principais (/, /sobre, /nova-pagina)
+- ✅ Teste de conteúdo das páginas
+- ✅ Teste de rotas inexistentes (404)
+- ✅ Teste de configuração da aplicação
+- ✅ Teste de registro de rotas
+- ✅ Teste de headers de resposta
+
+### CI/CD
+
+Os testes são executados automaticamente via GitHub Actions em:
+- Push para a branch main
+- Pull Requests para a branch main
+
+O workflow inclui:
+- Execução de testes unitários
+- Relatório de cobertura de código
+- Upload de cobertura para Codecov
+- Linting com flake8
+- Build e teste da imagem Docker
