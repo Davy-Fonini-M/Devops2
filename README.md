@@ -95,6 +95,5 @@ Os testes são executados automaticamente via GitHub Actions em:
 O workflow inclui:
 - Execução de testes unitários
 - Relatório de cobertura de código
-- Upload de cobertura para Codecov
 - Linting com flake8
 - Build e teste da imagem Docker

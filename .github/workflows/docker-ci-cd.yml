@@ -25,14 +25,7 @@ jobs:
     
     - name: Run unit tests
       run: |
-        pytest test_app.py -v --cov=app --cov-report=xml
-    
-    - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v4
-      with:
-        file: ./coverage.xml
-        flags: unittests
-        name: codecov-umbrella
+        pytest test_app.py -v --cov=app --cov-report=term-missing
     
     - name: Lint with flake8
       run: |
@@ -49,25 +42,3 @@ jobs:
         sleep 5
         curl -s --retry 10 --retry-connrefused http://localhost:5000/
         docker stop flask-container
-
-  # Desafio opcional: publicar no DockerHub
-  publish:
-    needs: build-and-test
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && secrets.DOCKERHUB_USERNAME != ''
-    runs-on: ubuntu-latest
-    
-    steps:
-    - uses: actions/checkout@v4
-    
-    - name: Login to DockerHub
-      uses: docker/login-action@v3
-      with:
-        username: ${{ secrets.DOCKERHUB_USERNAME }}
-        password: ${{ secrets.DOCKERHUB_TOKEN }}
-    
-    - name: Build and push Docker image
-      uses: docker/build-push-action@v5
-      with:
-        context: .
-        push: true
-        tags: ${{ secrets.DOCKERHUB_USERNAME }}/flask-app:latest
