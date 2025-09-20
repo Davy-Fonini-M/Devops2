@@ -1,0 +1,119 @@
+name: Testes Agendados
+
+# Desabilitado temporariamente - use simple-test.yml
+# on:
+#   schedule:
+#     # Executa todos os dias às 9h UTC (6h BRT)
+#     - cron: '0 9 * * *'
+#     # Executa toda segunda-feira às 8h UTC (5h BRT)
+#     - cron: '0 8 * * 1'
+#   workflow_dispatch:
+
+jobs:
+  scheduled-test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Configurar Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Cache pip dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+    
+    - name: Instalar dependências
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    
+    - name: Executar bateria completa de testes
+      run: |
+        echo "🧪 Executando bateria completa de testes..."
+        pytest --cov=app --cov-report=xml --cov-report=html --cov-report=term-missing --cov-fail-under=80 -v
+    
+    - name: Verificar qualidade do código
+      run: |
+        echo "🔍 Verificando qualidade do código..."
+        pip install flake8 black isort
+        flake8 app.py test_app.py --max-line-length=100 --ignore=E203,W503
+        black --check app.py test_app.py
+        isort --check-only app.py test_app.py
+    
+    - name: Teste de performance
+      run: |
+        echo "⚡ Testando performance..."
+        python -c "
+        import time
+        import requests
+        from app import app
+        
+        with app.test_client() as client:
+            start_time = time.time()
+            for i in range(100):
+                response = client.get('/')
+                assert response.status_code == 200
+            end_time = time.time()
+            
+            avg_time = (end_time - start_time) / 100
+            print(f'Tempo médio por requisição: {avg_time:.4f}s')
+            assert avg_time < 0.1, f'Performance degradada: {avg_time:.4f}s > 0.1s'
+        "
+    
+    - name: Upload relatórios
+      uses: actions/upload-artifact@v3
+      with:
+        name: scheduled-test-reports-${{ github.run_number }}
+        path: |
+          htmlcov/
+          coverage.xml
+    
+    - name: Notificar resultado dos testes agendados
+      uses: 8398a7/action-slack@v3
+      with:
+        status: custom
+        custom_payload: |
+          {
+            "text": "📅 Testes Agendados Executados",
+            "attachments": [{
+              "color": "good",
+              "fields": [
+                {"title": "Data/Hora", "value": "${{ github.run_date }}", "short": true},
+                {"title": "Status", "value": "✅ Sucesso", "short": true},
+                {"title": "Repositório", "value": "${{ github.repository }}", "short": true},
+                {"title": "Branch", "value": "${{ github.ref_name }}", "short": true},
+                {"title": "Detalhes", "value": "Todos os testes passaram com sucesso", "short": false}
+              ]
+            }]
+          }
+        webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+      if: success()
+    
+    - name: Notificar falha nos testes agendados
+      uses: 8398a7/action-slack@v3
+      with:
+        status: failure
+        channel: '#devops-alerts'
+        webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+        custom_payload: |
+          {
+            "text": "❌ FALHA NOS TESTES AGENDADOS!",
+            "attachments": [{
+              "color": "danger",
+              "fields": [
+                {"title": "Data/Hora", "value": "${{ github.run_date }}", "short": true},
+                {"title": "Status", "value": "❌ Falha", "short": true},
+                {"title": "Repositório", "value": "${{ github.repository }}", "short": true},
+                {"title": "Branch", "value": "${{ github.ref_name }}", "short": true},
+                {"title": "Ação Necessária", "value": "Verificar e corrigir os problemas identificados", "short": false}
+              ]
+            }]
+          }
+      if: failure()
