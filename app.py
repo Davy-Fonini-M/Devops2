@@ -10,5 +10,9 @@ def index():
 def sobre():
     return render_template('sobre.html', title='Sobre')
 
+@app.route('/nova-pagina')
+def nova_pagina():
+    return render_template('index.html', title='Nova Página')
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)

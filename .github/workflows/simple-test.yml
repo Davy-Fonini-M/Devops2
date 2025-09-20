@@ -1,0 +1,61 @@
+name: Testes Simples
+
+# Desabilitado - use testes-unitarios.yml
+# on:
+#   push:
+#     branches: [ main, develop, feature/* ]
+#   pull_request:
+#     branches: [ main, develop ]
+#   workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Configurar Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Cache pip dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+    
+    - name: Instalar dependências
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    
+    - name: Executar testes unitários
+      run: |
+        echo "🧪 Executando testes unitários..."
+        pytest -m unit -v --tb=short
+    
+    - name: Executar testes de integração
+      run: |
+        echo "🔗 Executando testes de integração..."
+        pytest -m integration -v --tb=short
+    
+    - name: Executar todos os testes com cobertura
+      run: |
+        echo "📊 Executando todos os testes com cobertura..."
+        pytest --cov=app --cov-report=xml --cov-report=html --cov-report=term-missing --cov-fail-under=80
+    
+    - name: Upload relatório de cobertura HTML
+      uses: actions/upload-artifact@v4
+      with:
+        name: coverage-report
+        path: htmlcov/
+    
+    - name: Exibir resumo dos testes
+      run: |
+        echo "✅ Testes executados com sucesso!"
+        echo "📈 Cobertura de código gerada"
+        echo "📁 Relatório HTML disponível nos artifacts"

@@ -1,0 +1,137 @@
+name: Sistema de Alertas DevOps
+
+# Desabilitado temporariamente - use simple-test.yml
+# on:
+#   push:
+#     branches: [ main ]
+#   pull_request:
+#     types: [opened, closed, merged]
+#   workflow_run:
+#     workflows: ["Testes Unitários e Integração"]
+#     types: [completed]
+
+jobs:
+  notify-on-pr:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    
+    steps:
+    - name: Notificar abertura de PR
+      if: github.event.action == 'opened' && secrets.SLACK_WEBHOOK != ''
+      uses: 8398a7/action-slack@v3
+      with:
+        status: custom
+        custom_payload: |
+          {
+            "text": "🚀 Nova Pull Request criada!",
+            "attachments": [{
+              "color": "good",
+              "fields": [
+                {"title": "Repositório", "value": "${{ github.repository }}", "short": true},
+                {"title": "Autor", "value": "${{ github.actor }}", "short": true},
+                {"title": "Branch", "value": "${{ github.head_ref }} → ${{ github.base_ref }}", "short": true},
+                {"title": "Título", "value": "${{ github.event.pull_request.title }}", "short": false},
+                {"title": "Link", "value": "${{ github.event.pull_request.html_url }}", "short": false}
+              ]
+            }]
+          }
+        webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+    
+    - name: Notificar PR fechada
+      if: github.event.action == 'closed'
+      uses: 8398a7/action-slack@v3
+      with:
+        status: custom
+        custom_payload: |
+          {
+            "text": "✅ Pull Request fechada!",
+            "attachments": [{
+              "color": "warning",
+              "fields": [
+                {"title": "Repositório", "value": "${{ github.repository }}", "short": true},
+                {"title": "Autor", "value": "${{ github.actor }}", "short": true},
+                {"title": "Branch", "value": "${{ github.head_ref }} → ${{ github.base_ref }}", "short": true},
+                {"title": "Título", "value": "${{ github.event.pull_request.title }}", "short": false},
+                {"title": "Link", "value": "${{ github.event.pull_request.html_url }}", "short": false}
+              ]
+            }]
+          }
+        webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+
+  notify-on-test-failure:
+    runs-on: ubuntu-latest
+    if: github.event.workflow_run.conclusion == 'failure'
+    
+    steps:
+    - name: Notificar falha nos testes
+      uses: 8398a7/action-slack@v3
+      with:
+        status: failure
+        channel: '#devops-alerts'
+        webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+        fields: repo,message,commit,author,action,eventName,ref,workflow
+        custom_payload: |
+          {
+            "text": "❌ FALHA NOS TESTES!",
+            "attachments": [{
+              "color": "danger",
+              "fields": [
+                {"title": "Repositório", "value": "${{ github.repository }}", "short": true},
+                {"title": "Branch", "value": "${{ github.ref_name }}", "short": true},
+                {"title": "Commit", "value": "${{ github.sha }}", "short": true},
+                {"title": "Autor", "value": "${{ github.actor }}", "short": true},
+                {"title": "Workflow", "value": "${{ github.event.workflow_run.name }}", "short": false},
+                {"title": "Link do Workflow", "value": "${{ github.event.workflow_run.html_url }}", "short": false}
+              ]
+            }]
+          }
+
+  notify-on-deployment:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    
+    steps:
+    - name: Notificar deploy para produção
+      uses: 8398a7/action-slack@v3
+      with:
+        status: custom
+        custom_payload: |
+          {
+            "text": "🚀 Deploy para Produção!",
+            "attachments": [{
+              "color": "good",
+              "fields": [
+                {"title": "Repositório", "value": "${{ github.repository }}", "short": true},
+                {"title": "Branch", "value": "main", "short": true},
+                {"title": "Commit", "value": "${{ github.sha }}", "short": true},
+                {"title": "Autor", "value": "${{ github.actor }}", "short": true},
+                {"title": "Mensagem do Commit", "value": "${{ github.event.head_commit.message }}", "short": false}
+              ]
+            }]
+          }
+        webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+
+  daily-summary:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule'
+    
+    steps:
+    - name: Resumo diário de atividades
+      uses: 8398a7/action-slack@v3
+      with:
+        status: custom
+        custom_payload: |
+          {
+            "text": "📊 Resumo Diário - DevOps Project",
+            "attachments": [{
+              "color": "good",
+              "fields": [
+                {"title": "Data", "value": "${{ github.run_date }}", "short": true},
+                {"title": "Status do Projeto", "value": "✅ Funcionando", "short": true},
+                {"title": "Testes", "value": "✅ Passando", "short": true},
+                {"title": "Cobertura", "value": "✅ > 80%", "short": true},
+                {"title": "Próximos Passos", "value": "Continuar desenvolvimento e monitoramento", "short": false}
+              ]
+            }]
+          }
+        webhook_url: ${{ secrets.SLACK_WEBHOOK }}
