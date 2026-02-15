@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600">
+  <!-- Linhas de circuito -->
+  <path d="M100,100 L700,100 L700,500 L100,500 Z" fill="none" stroke="#ff0066" stroke-width="2" stroke-opacity="0.3" />
+  <path d="M200,200 L600,200 L600,400 L200,400 Z" fill="none" stroke="#00ccff" stroke-width="2" stroke-opacity="0.3" />
+  
+  <!-- Nós de circuito -->
+  <circle cx="100" cy="100" r="5" fill="#ff0066" />
+  <circle cx="700" cy="100" r="5" fill="#ff0066" />
+  <circle cx="700" cy="500" r="5" fill="#ff0066" />
+  <circle cx="100" cy="500" r="5" fill="#ff0066" />
+  
+  <circle cx="200" cy="200" r="5" fill="#00ccff" />
+  <circle cx="600" cy="200" r="5" fill="#00ccff" />
+  <circle cx="600" cy="400" r="5" fill="#00ccff" />
+  <circle cx="200" cy="400" r="5" fill="#00ccff" />
+  
+  <!-- Linhas de conexão -->
+  <line x1="100" y1="100" x2="200" y2="200" stroke="#ff0066" stroke-width="2" stroke-opacity="0.3" />
+  <line x1="700" y1="100" x2="600" y2="200" stroke="#ff0066" stroke-width="2" stroke-opacity="0.3" />
+  <line x1="700" y1="500" x2="600" y2="400" stroke="#ff0066" stroke-width="2" stroke-opacity="0.3" />
+  <line x1="100" y1="500" x2="200" y2="400" stroke="#ff0066" stroke-width="2" stroke-opacity="0.3" />
+  
+  <!-- Linhas adicionais -->
+  <path d="M300,100 L300,500" stroke="#00ccff" stroke-width="1" stroke-opacity="0.3" stroke-dasharray="5,5" />
+  <path d="M500,100 L500,500" stroke="#00ccff" stroke-width="1" stroke-opacity="0.3" stroke-dasharray="5,5" />
+  <path d="M100,300 L700,300" stroke="#ff0066" stroke-width="1" stroke-opacity="0.3" stroke-dasharray="5,5" />
+  
+  <!-- Componentes de circuito -->
+  <rect x="280" y="280" width="40" height="40" fill="none" stroke="#ff0066" stroke-width="2" />
+  <rect x="480" y="280" width="40" height="40" fill="none" stroke="#00ccff" stroke-width="2" />
+  
+  <!-- Pontos de conexão adicionais -->
+  <circle cx="300" cy="100" r="3" fill="#00ccff" />
+  <circle cx="500" cy="100" r="3" fill="#00ccff" />
+  <circle cx="300" cy="500" r="3" fill="#00ccff" />
+  <circle cx="500" cy="500" r="3" fill="#00ccff" />
+  <circle cx="100" cy="300" r="3" fill="#ff0066" />
+  <circle cx="700" cy="300" r="3" fill="#ff0066" />
+</svg>
